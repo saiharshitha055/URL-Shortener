@@ -1,137 +1,134 @@
 # URL Shortener API
-Built a basic URL Shortener REST API built using FastAPI and PostgreSQL.
 
-## Project Overview
-This project provides a simple API for converting long URLs into shorter URLs and redirecting users from a shortened URL to the original URL.
-The application uses FastAPI for the REST API, PostgreSQL for persistent data storage, and SQLAlchemy as the ORM for database interaction.
+A simple REST API that converts long URLs into short, shareable URLs and redirects users to the original URL.
+
+The application is built with FastAPI and PostgreSQL and is deployed publicly using Render with Neon PostgreSQL as the cloud database.
+
+## Live Demo
+
+- **API:** https://url-shortener-api-sigv.onrender.com
+- **Swagger Documentation:** https://url-shortener-api-sigv.onrender.com/docs
 
 ## Features
-- Create a shortened URL from a valid long URL
-- Generate a unique 6-character short code
-- Store URL mappings in PostgreSQL
+
+- Create short URLs from long URLs
+- Generate unique 6-character short codes
 - Redirect short URLs to their original URLs
-- Validate URL input using Pydantic
-- Return a 404 response for unknown short codes
-- Automatic API documentation using Swagger UI
+- Store URL mappings in PostgreSQL
+- Interactive Swagger API documentation
+- Environment-based configuration for secure database credentials
+- Public cloud deployment
 
-## Technologies Used
-- Python 3.12
-- FastAPI
-- Uvicorn
-- PostgreSQL
-- SQLAlchemy
-- psycopg2
-- Pydantic
-- python-dotenv
+## API Endpoints
 
-## Project Structure
-```text
-URL_Shortener/
+### 1. Create a Short URL
+
+**POST** `/shorten`
+
+Request:
+
+```json
+{
+  "url": "https://www.example.com"
+}
+
+Response:
+
+{
+  "short_code": "TPjH7D",
+  "short_url": "https://url-shortener-api-sigv.onrender.com/TPjH7D"
+}
+2. Redirect to Original URL
+
+GET /{short_code}
+
+Example:
+
+https://url-shortener-api-sigv.onrender.com/TPjH7D
+
+The API looks up the short code and redirects the user to the original URL.
+
+How to Use
+Open the Swagger Documentation.
+Open POST /shorten.
+Click Try it out.
+Enter the long URL.
+Click Execute.
+Copy the generated short_url.
+Open or share the short URL.
+Technologies Used
+Python
+FastAPI
+PostgreSQL
+SQLAlchemy
+Pydantic
+Uvicorn
+Neon PostgreSQL
+Render
+Project Structure
+URL-Shortener/
 │
 ├── main.py
 ├── database.py
 ├── models.py
 ├── schemas.py
 ├── requirements.txt
-├── README.md
 ├── .env.example
-└── .gitignore
+├── .gitignore
+└── README.md
+Run Locally
+1. Clone the repository
+git clone https://github.com/saiharshitha055/URL-Shortener.git
+cd URL-Shortener
+2. Create a virtual environment
+python -m venv env
 
-#API Endpoints
-1. Create a Short URL
-The JSON request body for Endpoint POST /shorten is
-{
-  "url": "https://www.google.com/"
-}
-And the response for this JSON text is
-{
-  "short_code": "WrRZq8",
-  "short_url": "http://127.0.0.1:8000/WrRZq8"
-}
-The short code will be generated dynamically and will be different for each request.
+Windows:
 
-2. Redirect to Original URL
-The example for the endpoint GET/{short_code} is
-GET /WrRZq8
-The API looks up the short code in PostgreSQL and redirects the user to the corresponding original URL.
-
-3. Root Endpoint
-The response for the GET/ endpoint is:
-{
-  "message": "URL Shortener API is running"
-}
-
-Database
-PostgreSQL is used to store URL mappings.
-Database name is url_shortner and the table created is urls
-Columns:
-Column	           Type	              Description
-id	              Integer	          Primary key
-original_url	  String	          Original long URL
-short_code	      String	          Unique generated short code
-Setup Instructions using VS code Terminal powershell:
-1.Installed a compatible version of Python as I have 3.12
-2.Create a virtual environment
-python -m venv venv
-3.Installed the dependencies
+.\env\Scripts\Activate.ps1
+3. Install dependencies
 pip install -r requirements.txt
-4. Install PostgreSQL
-Install PostgreSQL and pgAdmin.
-Create a PostgreSQL database named:url_shortener
+4. Configure environment variables
 
-5. Configure Environment Variables
-Created a .env file in the project root:DB_USER=postgres
-                                        DB_PASSWORD=your_postgresql_password
-                                        DB_HOST=localhost
-                                        DB_PORT=5432
-                                        DB_NAME=url_shortener
-Caution:Never share your .env file to anyone or any AI because it contains database credentials.
+Create a .env file using .env.example as a reference.
 
-6. Run the Application
+For local PostgreSQL:
+
+DB_USER=postgres
+DB_PASSWORD=your_postgresql_password
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=url_shortener
+PUBLIC_BASE_URL=http://127.0.0.1:8000
+
+For a cloud PostgreSQL database, use:
+
+DATABASE_URL=your_database_connection_string
+
+Do not commit .env or database credentials to GitHub.
+
+5. Start the application
 uvicorn main:app --reload
-Then the API is available at http://127.0.0.1:8000
 
-7. Open Swagger UI
-FastAPI automatically provides interactive API documentation at:http://127.0.0.1:8000/docs
-Use Swagger UI to test the API endpoints.
+The local API will be available at:
 
-8.Testing
-The following scenarios were tested:
-i.Successful URL shortening
-POST /shorten with a valid url returns 201 Created
+http://127.0.0.1:8000
 
-ii.Database persistence
-The generated URL mapping is stored in the PostgreSQL urls table.
-Successful redirection
-Opening is http://127.0.0.1:8000/{short_code} that redirects the user to the original URL.
+Swagger documentation:
 
-iii.Invalid short code
-An unknown short code returns: 404 Not Found
-with the following JSON structure:
-{
-  "detail": "Short URL not found"
-}
+http://127.0.0.1:8000/docs
+Deployment
 
-iv.Invalid URL
-An invalid URL submitted to /shorten is rejected by request validation with: 422 Unprocessable Entity
+The application is deployed on Render and uses Neon PostgreSQL for cloud database storage.
 
-Architecture of the project:
-Client
-  |
-  | HTTP Request
-  v
-FastAPI
-  |
-  v
-SQLAlchemy
-  |
-  v
-PostgreSQL
-  |
-  v
-urls table
+Environment variables are configured securely through the deployment platform.
 
-Note: This project is intended as a basic local URL shortening API for the assessment. The generated short URLs use the local application address during development.
+Repository
 
+GitHub: https://github.com/saiharshitha055/URL-Shortener.git
 
+License
+The project is created for educational purposes.
+
+This project was created as part of a technical assignment.
  
